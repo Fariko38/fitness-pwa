@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness Tracker</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Fitness Tracker">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <!-- Google Font Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:#f4f7fb; --card:#ffffff; --text:#0f1724; --muted:#64748b; --accent:#10b981; --danger:#ef4444;
+      --glass: rgba(255,255,255,0.6); --shadow: 0 6px 18px rgba(18,25,41,0.08);
+      font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    [data-theme="dark"] {
+      --bg:#0b1020; --card:#0f1724; --text:#e6eef8; --muted:#9aa7bd; --accent:#34d399; --danger:#fb7185;
+      --glass: rgba(255,255,255,0.03); --shadow:0 8px 30px rgba(2,6,23,0.6);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;padding:18px;display:flex;justify-content:center;font-size:15px;background:var(--bg);color:var(--text);}
+    .app{width:100%; max-width:980px; display:grid; gap:18px; grid-template-columns:1fr 380px;}
+    header{grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:12px;}
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:grid;place-items:center;color:white;font-weight:700;box-shadow:var(--shadow);}
+    h1{margin:0;font-size:18px;}
+    p.lead{margin:0;color:var(--muted);font-size:13px;}
+    .card{background:var(--card); border-radius:14px; padding:14px; box-shadow:var(--shadow);}
+    .controls{display:flex;gap:8px;align-items:center;}
+    .btn{border:0;padding:8px 12px;border-radius:10px;background:var(--glass);cursor:pointer;color:var(--text);font-weight:600;}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),#60a5fa); color:white;}
+    form.grid{display:grid;grid-template-columns: repeat(2,1fr);gap:12px;}
+    .field{display:flex;flex-direction:column;gap:6px;}
+    label{font-size:12px;color:var(--muted);}
+    input[type=number]{padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--text);}
+    .full{grid-column:1/-1;}
+    .progress-wrap{display:flex;flex-direction:column;gap:8px;}
+    .progress{height:12px;background:linear-gradient(0deg, rgba(0,0,0,0.03), rgba(0,0,0,0.03));border-radius:999px;overflow:hidden;}
+    .progress > i{display:block;height:100%; width:0%; background:linear-gradient(90deg,var(--accent),#60a5fa); border-radius:inherit; transition:width 900ms cubic-bezier(.2,.9,.3,1);}
+    .progress.red > i{background:linear-gradient(90deg,var(--danger),#fb7185);}
+    .progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);}
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:8px 6px;text-align:left;border-bottom:1px solid rgba(0,0,0,0.04);font-size:13px;}
+    th{color:var(--muted);font-weight:600;}
+    .records{display:flex;gap:8px;flex-wrap:wrap;}
+    .record{flex:1;min-width:160px;}
+    .smiley{font-size:28px;}
+    @media (max-width:860px){.app{grid-template-columns:1fr; padding-bottom:120px} .logo{width:44px;height:44px}}
+    footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:12px;padding-top:6px;}
+    #updateToast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:var(--card);padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);display:none;align-items:center;gap:10px;}
+  </style>
+</head>
+<body data-theme="light">
+  <div class="app" id="app">
+    <header>
+      <div class="brand">
+        <div class="logo">FT</div>
+        <div>
+          <h1>Fitness Tracker</h1>
+          <p class="lead">Journal quotidien — Sauvegarde locale</p>
+        </div>
+      </div>
+      <div class="controls">
+        <div style="text-align:right;margin-right:8px">
+          <div id="todayLabel"></div>
+          <div style="font-size:12px;color:var(--muted)" id="weekday"></div>
+        </div>
+        <button class="btn" id="themeToggle" title="Toggle thème">🌓</button>
+      </div>
+    </header>
+
+    <!-- Formulaire de saisie -->
+    <div class="left">
+      <div class="card">
+        <h2>Saisie quotidienne</h2>
+        <form class="grid" id="dailyForm">
+          <div class="field"><label>Poids (kg)</label><input type="number" id="weight"></div>
+          <div class="field"><label>Pas</label><input type="number" id="steps"></div>
+          <div class="field"><label>Pompes</label><input type="number" id="pushups"></div>
+          <div class="field"><label>Lever de talon</label><input type="number" id="heel"></div>
+          <div class="field"><label>Lever de genoux</label><input type="number" id="knees"></div>
+          <div class="field"><label>Lever de jambe</label><input type="number" id="legs"></div>
+          <div class="field"><label>Calories</label><input type="number" id="calories"></div>
+          <div class="field"><label>Eau (L)</label><input type="number" id="water" step="0.1"></div>
+          <div class="field full"><button type="submit" class="btn primary">Enregistrer</button></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Historique + Records -->
+    <div class="right">
+      <div class="card">
+        <h2>Humeur</h2>
+        <div class="smiley" id="smiley">😴</div>
+      </div>
+      <div class="card">
+        <h2>Historique</h2>
+        <table id="historyTable">
+          <thead>
+            <tr><th>Jour</th><th>Poids</th><th>Pas</th><th>Exercices</th><th>Eau</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h2>Records</h2>
+        <div class="records" id="records"></div>
+      </div>
+    </div>
+
+    <footer>
+      <div>Fichier local • Montserrat • Responsive • Sauvegarde locale</div>
+    </footer>
+  </div>
+
+  <div id="updateToast"><span>Nouvelle version disponible</span><button class="btn primary" id="reloadBtn">Recharger</button></div>
+
+  <script>
+  // ==== Service Worker registration & update ====
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => {
+        if(reg.waiting) showUpdateToast(reg);
+        reg.addEventListener('updatefound', ()=>{
+          const sw = reg.installing;
+          sw.addEventListener('statechange',()=>{if(sw.state==='installed' && navigator.serviceWorker.controller) showUpdateToast(reg);});
+        });
+      });
+    navigator.serviceWorker.addEventListener('controllerchange',()=>window.location.reload());
+  }
+  function showUpdateToast(reg){
+    const t=document.getElementById('updateToast'); t.style.display='flex';
+    document.getElementById('reloadBtn').onclick=()=>reg.waiting.postMessage({type:'SKIP_WAITING'});
+  }
+
+  // ==== Thème sombre / clair ====
+  const themeToggle=document.getElementById('themeToggle');
+  const body=document.body;
+  const savedTheme=localStorage.getItem('theme');
+  if(savedTheme) body.dataset.theme=savedTheme;
+  themeToggle.onclick=()=>{
+    body.dataset.theme = body.dataset.theme==='light'?'dark':'light';
+    localStorage.setItem('theme',body.dataset.theme);
+  }
+
+  // ==== Afficher date du jour ====
+  const todayLabel=document.getElementById('todayLabel');
+  const weekdayLabel=document.getElementById('weekday');
+  const today=new Date();
+  todayLabel.textContent=today.toLocaleDateString('fr-FR');
+  weekdayLabel.textContent=today.toLocaleDateString('fr-FR',{weekday:'long'});
+
+  // ==== Variables & objectifs ====
+  const dailyForm=document.getElementById('dailyForm');
+  const historyTable=document.querySelector('#historyTable tbody');
+  const recordsDiv=document.getElementById('records');
+  const smileyDiv=document.getElementById('smiley');
+
+  const GOALS={steps:15000,water:2,pushups:50,heel:50,knees:50,legs:50};
+
+  // ==== Charger données ====
+  let history=JSON.parse(localStorage.getItem('history')||'[]');
+  let records=JSON.parse(localStorage.getItem('records')||'{}');
+
+  function updateRecords(data){
+    for(const key of Object.keys(GOALS)){
+      if(!records[key] || data[key]>records[key]) records[key]=data[key];
+    }
+    localStorage.setItem('records',JSON.stringify(records));
+  }
+
+  function updateHistoryTable(){
+    historyTable.innerHTML='';
+    history.forEach(h=>{
+      const tr=document.createElement('tr');
+      const exercisesTotal=h.pushups+h.heel+h.knees+h.legs;
+      tr.innerHTML=`<td>${h.date}</td><td>${h.weight||''}</td><td>${h.steps||''}</td><td>${exercisesTotal}</td><td>${h.water||''}</td>`;
+      historyTable.appendChild(tr);
+    });
+  }
+
+  function updateRecordsUI(){
+    recordsDiv.innerHTML='';
+    for(const key of Object.keys(records)){
+      const div=document.createElement('div');
+      div.className='record';
+      div.textContent=`${key}: ${records[key]}`;
+      recordsDiv.appendChild(div);
+    }
+  }
+
+  function updateSmiley(data){
+    let count=0;
+    if(data.steps>=GOALS.steps) count++;
+    if(data.water>=GOALS.water) count++;
+    if(data.pushups>=GOALS.pushups) count++;
+    if(data.heel>=GOALS.heel) count++;
+    if(data.knees>=GOALS.knees) count++;
+    if(data.legs>=GOALS.legs) count++;
+    smileyDiv.textContent = count<=2?'😴':count<=4?'🙂':'😃';
+  }
+
+  function saveData(data){
+    history.unshift(data);
+    localStorage.setItem('history',JSON.stringify(history));
+    updateRecords(data);
+    localStorage.setItem('records',JSON.stringify(records));
+    updateHistoryTable();
+    updateRecordsUI();
+    updateSmiley(data);
+  }
+
+  dailyForm.addEventListener('submit',e=>{
+    e.preventDefault();
+    const data={
+      date: todayLabel.textContent,
+      weight:Number(document.getElementById('weight').value)||0,
+      steps:Number(document.getElementById('steps').value)||0,
+      pushups:Number(document.getElementById('pushups').value)||0,
+      heel:Number(document.getElementById('heel').value)||0,
+      knees:Number(document.getElementById('knees').value)||0,
+      legs:Number(document.getElementById('legs').value)||0,
+      water:Number(document.getElementById('water').value)||0
+    };
+    saveData(data);
+    dailyForm.reset();
+  });
+
+  // Initial render
+  updateHistoryTable();
+  updateRecordsUI();
+  </script>
+</body>
+</html>
