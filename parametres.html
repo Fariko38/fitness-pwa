@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fitness Tracker - Records</title>
+  <title>Fitness Tracker - Paramètres</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body onload="loadRecords()">
-  <header>🏆 Records</header>
+<body>
+  <header>⚙️ Paramètres</header>
 
   <div class="container">
     <div class="card">
-      <h2>Meilleurs résultats</h2>
-      <div id="recordsContainer"></div>
+      <h2>Préférences</h2>
+      <button class="toggle-theme" id="toggleThemeBtn">🌙 Activer le mode sombre</button>
     </div>
   </div>
 
   <div class="bottom-nav">
     <button onclick="navigate('index.html')">🏠 Entrées</button>
     <button onclick="navigate('historique.html')">📊 Historique</button>
-    <button class="active" onclick="navigate('records.html')">🏆 Records</button>
-    <button onclick="navigate('parametres.html')">⚙️ Paramètres</button>
+    <button onclick="navigate('records.html')">🏆 Records</button>
+    <button class="active" onclick="navigate('parametres.html')">⚙️ Paramètres</button>
   </div>
 
   <script src="fitness.js"></script>

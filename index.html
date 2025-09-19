@@ -2,52 +2,53 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Fitness Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness Tracker - Entrées</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="app-header">🏋️ Fitness Tracker</header>
+  <header>🏋️ Fitness Tracker</header>
 
-  <main class="container">
-    <section class="card">
+  <div class="container">
+    <div class="card">
       <h2>Entrées quotidiennes</h2>
 
-      <div class="form-group"><input type="number" id="poids" placeholder="Poids (kg)"></div>
-      <div class="form-group"><input type="number" id="calories" placeholder="Calories consommées"></div>
-      <div class="form-group"><input type="number" id="eau" placeholder="Eau (L)"></div>
-      <div class="form-group"><input type="number" id="pas" placeholder="Nombre de pas"></div>
-      <div class="form-group"><input type="number" id="km" placeholder="Course (km)"></div>
-      <div class="form-group"><input type="number" id="jambes" placeholder="Levers de jambe"></div>
-      <div class="form-group"><input type="number" id="genoux" placeholder="Levers de genoux"></div>
-      <div class="form-group"><input type="number" id="talons" placeholder="Levers de talon"></div>
-      <div class="form-group"><input type="number" id="pompes" placeholder="Pompes"></div>
+      <input type="number" id="poids" placeholder="Poids (kg)">
+      <input type="number" id="calories" placeholder="Calories consommées">
+      <input type="number" id="eau" placeholder="Eau (L)">
+      <input type="number" id="pas" placeholder="Nombre de pas">
+      <input type="number" id="km" placeholder="Course (km)">
+      <input type="number" id="jambes" placeholder="Levers de jambe">
+      <input type="number" id="genoux" placeholder="Levers de genoux">
+      <input type="number" id="talons" placeholder="Levers de talon">
+      <input type="number" id="pompes" placeholder="Pompes">
 
-      <button class="btn-primary" onclick="saveData(); updateProgressBars(); updateBadges()">Enregistrer / Modifier</button>
-    </section>
+      <button onclick="saveData(); updateProgressBars(); updateBadges()">Enregistrer / Modifier</button>
 
-    <section class="card">
-      <h3>Progression</h3>
-      <label>Calories : <span id="caloriesValue">0</span>/2000 kcal</label>
-      <div class="progress-container"><div class="progress-bar calories" id="caloriesBar"></div></div>
+      <h3>Progression quotidienne</h3>
+      <div>
+        <label>Calories : <span id="caloriesValue">0</span>/2000 kcal</label>
+        <div class="progress-container">
+          <div class="progress-bar calories" id="caloriesBar"></div>
+        </div>
 
-      <label>Eau : <span id="eauValue">0</span>/2 L</label>
-      <div class="progress-container"><div class="progress-bar eau" id="eauBar"></div></div>
-    </section>
+        <label>Eau : <span id="eauValue">0</span>/2 L</label>
+        <div class="progress-container">
+          <div class="progress-bar eau" id="eauBar"></div>
+        </div>
+      </div>
 
-    <section class="card">
       <h3>Badges</h3>
-      <div id="badgesContainer" class="badges"></div>
-    </section>
-  </main>
+      <div id="badgesContainer"></div>
+    </div>
+  </div>
 
-  <nav class="bottom-nav">
-    <button class="active" onclick="navigate('index.html')">🏠<span>Entrées</span></button>
-    <button onclick="navigate('historique.html')">📊<span>Historique</span></button>
-    <button onclick="navigate('records.html')">🏆<span>Records</span></button>
-  </nav>
-
-  <button class="toggle-theme" id="toggleThemeBtn">🌙</button>
+  <div class="bottom-nav">
+    <button class="active" onclick="navigate('index.html')">🏠 Entrées</button>
+    <button onclick="navigate('historique.html')">📊 Historique</button>
+    <button onclick="navigate('records.html')">🏆 Records</button>
+    <button onclick="navigate('parametres.html')">⚙️ Paramètres</button>
+  </div>
 
   <script src="fitness.js"></script>
 </body>

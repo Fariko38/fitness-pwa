@@ -1,47 +1,28 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Historique Fitness</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness Tracker - Historique</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-<header>📊 Historique</header>
+<body onload="loadHistorique()">
+  <header>📊 Historique</header>
 
-<div class="container">
-  <div class="card">
-    <h2>Historique des entrées</h2>
-    <button onclick="clearHistory()">Supprimer tout l'historique</button>
-    <table id="historyTable">
-      <thead>
-        <tr>
-          <th>Jour</th>
-          <th>Poids</th>
-          <th>Calories consommées</th>
-          <th>Eau (L)</th>
-          <th>Pas</th>
-          <th>Course (km)</th>
-          <th>Jambes</th>
-          <th>Genoux</th>
-          <th>Talons</th>
-          <th>Pompes</th>
-          <th>Supprimer</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Rempli dynamiquement par fitness.js -->
-      </tbody>
-    </table>
+  <div class="container">
+    <div class="card">
+      <h2>Historique des entrées</h2>
+      <div id="historiqueContainer"></div>
+    </div>
   </div>
-</div>
 
-<div class="bottom-nav">
-  <button onclick="navigate('index.html')">🏠 Entrées</button>
-  <button class="active" onclick="navigate('historique.html')">📊 Historique</button>
-  <button onclick="navigate('records.html')">🏆 Records</button>
-</div>
+  <div class="bottom-nav">
+    <button onclick="navigate('index.html')">🏠 Entrées</button>
+    <button class="active" onclick="navigate('historique.html')">📊 Historique</button>
+    <button onclick="navigate('records.html')">🏆 Records</button>
+    <button onclick="navigate('parametres.html')">⚙️ Paramètres</button>
+  </div>
 
-<script src="fitness.js"></script>
+  <script src="fitness.js"></script>
 </body>
 </html>
