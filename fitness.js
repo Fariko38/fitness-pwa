@@ -117,7 +117,6 @@ if(localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
 }
 
-// Mise à jour historique au chargement
 updateHistory();
 updateProgressBars();
 updateBadges();
