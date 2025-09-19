@@ -1,4 +1,3 @@
-// Objectifs
 const GOALS = {
   pas: 15000,
   eau: 2000,
