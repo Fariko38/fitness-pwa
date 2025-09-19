@@ -1,75 +1,123 @@
-// stockage des données
-let data = JSON.parse(localStorage.getItem("fitnessData")) || [];
-let records = JSON.parse(localStorage.getItem("fitnessRecords")) || {};
+let data = JSON.parse(localStorage.getItem('fitnessData')) || [];
 
 function saveData() {
-  const entry = {
-    jour: new Date().toLocaleDateString(),
-    poids: +document.getElementById("poids")?.value || 0,
-    pas: +document.getElementById("pas")?.value || 0,
-    pompes: +document.getElementById("pompes")?.value || 0,
-    talons: +document.getElementById("talons")?.value || 0,
-    genoux: +document.getElementById("genoux")?.value || 0,
-    jambes: +document.getElementById("jambes")?.value || 0,
-    calories: +document.getElementById("calories")?.value || 0,
-    eau: +document.getElementById("eau")?.value || 0,
-    km: +document.getElementById("km")?.value || 0
-  };
+    const today = new Date().toLocaleDateString('fr-FR');
+    const poids = parseFloat(document.getElementById('poids').value) || 0;
+    const calories = parseInt(document.getElementById('calories').value) || 0;
+    const eau = parseFloat(document.getElementById('eau').value) || 0;
+    const pas = parseInt(document.getElementById('pas').value) || 0;
+    const km = parseFloat(document.getElementById('km').value) || 0;
+    const jambes = parseInt(document.getElementById('jambes').value) || 0;
+    const genoux = parseInt(document.getElementById('genoux').value) || 0;
+    const talons = parseInt(document.getElementById('talons').value) || 0;
+    const pompes = parseInt(document.getElementById('pompes').value) || 0;
 
-  const todayIndex = data.findIndex(d=>d.jour===entry.jour);
-  if(todayIndex>-1) data[todayIndex] = entry; 
-  else data.push(entry);
+    let existing = data.find(d => d.jour === today);
+    if(existing) {
+        Object.assign(existing, {poids, calories, eau, pas, km, jambes, genoux, talons, pompes});
+    } else {
+        data.push({jour: today, poids, calories, eau, pas, km, jambes, genoux, talons, pompes});
+    }
 
-  localStorage.setItem("fitnessData", JSON.stringify(data));
-  updateRecords();
-  alert("Données enregistrées ✅");
+    localStorage.setItem('fitnessData', JSON.stringify(data));
+    alert("Données enregistrées !");
+    updateHistory();
+    updateProgressBars();
+    updateBadges();
 }
 
-function clearHistory(){
-  if(confirm("Supprimer tout l'historique ?")) {
-    data=[]; localStorage.setItem("fitnessData", JSON.stringify(data));
-    updateRecords();
-    location.reload();
-  }
-}
-
-function updateRecords(){
-  let maxPas=0,maxEau=0,maxPompes=0,maxTalons=0,maxGenoux=0,maxJambes=0,totalKm=0;
-  data.forEach(d=>{
-    if(d.pas>maxPas) maxPas=d.pas;
-    if(d.eau>maxEau) maxEau=d.eau;
-    if(d.pompes>maxPompes) maxPompes=d.pompes;
-    if(d.talons>maxTalons) maxTalons=d.talons;
-    if(d.genoux>maxGenoux) maxGenoux=d.genoux;
-    if(d.jambes>maxJambes) maxJambes=d.jambes;
-    totalKm+=d.km;
-  });
-  records={maxPas,maxEau,maxPompes,maxTalons,maxGenoux,maxJambes,totalKm};
-  localStorage.setItem("fitnessRecords",JSON.stringify(records));
-
-  const recList=document.getElementById("records");
-  if(recList){
-    recList.innerHTML=`
-      <li>Pas maximum : ${records.maxPas}</li>
-      <li>Eau maximum : ${records.maxEau} L</li>
-      <li>Pompes maximum : ${records.maxPompes}</li>
-      <li>Levers de talon maximum : ${records.maxTalons}</li>
-      <li>Levers de genoux maximum : ${records.maxGenoux}</li>
-      <li>Levers de jambe maximum : ${records.maxJambes}</li>
-      <li>Km total : ${records.totalKm}</li>
-    `;
-  }
-
-  const badgesDiv=document.getElementById("badges");
-  if(badgesDiv){
-    badgesDiv.innerHTML="";
-    data.forEach(d=>{
-      if(d.pas>=15000) badgesDiv.innerHTML+="<span class='badge'>🔥 15000 pas atteints !</span>";
-      if(d.eau>=2) badgesDiv.innerHTML+="<span class='badge'>💧 Objectif eau atteint !</span>";
+function updateHistory() {
+    const tbody = document.querySelector("#historyTable tbody");
+    if(!tbody) return;
+    tbody.innerHTML = "";
+    data.forEach((d, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${d.jour}</td>
+            <td>${d.poids}</td>
+            <td>${d.calories}</td>
+            <td>${d.eau}</td>
+            <td>${d.pas}</td>
+            <td>${d.km}</td>
+            <td>${d.jambes}</td>
+            <td>${d.genoux}</td>
+            <td>${d.talons}</td>
+            <td>${d.pompes}</td>
+            <td><button onclick="deleteEntry(${index})">❌</button></td>
+        `;
+        tbody.appendChild(tr);
     });
-  }
 }
 
-function navigate(page){ window.location.href=page; }
+function deleteEntry(index) {
+    data.splice(index,1);
+    localStorage.setItem('fitnessData', JSON.stringify(data));
+    updateHistory();
+}
 
-updateRecords();
+function clearHistory() {
+    if(confirm("Voulez-vous vraiment supprimer tout l'historique ?")) {
+        data = [];
+        localStorage.setItem('fitnessData', JSON.stringify(data));
+        updateHistory();
+    }
+}
+
+function updateProgressBars() {
+    const caloriesInput = parseInt(document.getElementById('calories').value) || 0;
+    const eauInput = parseFloat(document.getElementById('eau').value) || 0;
+
+    const caloriesBar = document.getElementById('caloriesBar');
+    const eauBar = document.getElementById('eauBar');
+
+    const maxCalories = 2000;
+    const maxEau = 2;
+
+    let caloriesPercent = Math.min((caloriesInput / maxCalories) * 100, 100);
+    let eauPercent = Math.min((eauInput / maxEau) * 100, 100);
+
+    caloriesBar.style.width = caloriesPercent + '%';
+    eauBar.style.width = eauPercent + '%';
+
+    caloriesBar.style.background = caloriesInput > maxCalories ? '#ff4d4d' : '#4caf50';
+    eauBar.style.background = eauInput >= maxEau ? '#4caf50' : '#2196F3';
+
+    document.getElementById('caloriesValue').textContent = Math.min(caloriesInput, maxCalories);
+    document.getElementById('eauValue').textContent = Math.min(eauInput, maxEau);
+}
+
+function updateBadges() {
+    const container = document.getElementById('badgesContainer');
+    if(!container) return;
+    container.innerHTML = "";
+    const calories = parseInt(document.getElementById('calories').value) || 0;
+    const eau = parseFloat(document.getElementById('eau').value) || 0;
+    const pas = parseInt(document.getElementById('pas').value) || 0;
+    const km = parseFloat(document.getElementById('km').value) || 0;
+    const pompes = parseInt(document.getElementById('pompes').value) || 0;
+
+    if(calories <= 2000) container.innerHTML += '<span class="badge">🍽 Calories OK</span>';
+    if(eau >= 2) container.innerHTML += '<span class="badge">💧 Eau OK</span>';
+    if(pas >= 15000) container.innerHTML += '<span class="badge">🏃‍♂️ Pas atteints</span>';
+    if(km >= 5) container.innerHTML += '<span class="badge">🏃 Course atteinte</span>';
+    if(pompes >=50) container.innerHTML += '<span class="badge">💪 Pompes atteintes</span>';
+}
+
+function navigate(page) {
+    window.location.href = page;
+}
+
+document.getElementById('toggleThemeBtn').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const dark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', dark);
+});
+
+if(localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+}
+
+// Mise à jour historique au chargement
+updateHistory();
+updateProgressBars();
+updateBadges();

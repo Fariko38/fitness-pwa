@@ -5,34 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fitness Tracker</title>
 <link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
 </head>
 <body>
 <header>🏋️ Fitness Tracker</header>
 
+<button class="toggle-theme" id="toggleThemeBtn">🌙 Mode Sombre</button>
+
 <div class="container">
-  <section id="page-entrees" class="active">
-    <div class="card">
-      <h2>Entrées quotidiennes</h2>
-      <input type="number" id="poids" placeholder="Poids (kg)">
-      <input type="number" id="pas" placeholder="Nombre de pas">
-      <input type="number" id="pompes" placeholder="Pompes">
-      <input type="number" id="talons" placeholder="Levers de talon">
-      <input type="number" id="genoux" placeholder="Levers de genoux">
-      <input type="number" id="jambes" placeholder="Levers de jambe">
-      <input type="number" id="calories" placeholder="Calories">
-      <input type="number" id="eau" placeholder="Eau (L)">
-      <input type="number" id="km" placeholder="Course (km)">
-      <button onclick="saveData()">Enregistrer / Modifier</button>
+  <div class="card">
+    <h2>Entrées quotidiennes</h2>
+
+    <input type="number" id="poids" placeholder="Poids (kg)">
+    <input type="number" id="calories" placeholder="Calories consommées">
+    <input type="number" id="eau" placeholder="Eau (L)">
+    <input type="number" id="pas" placeholder="Nombre de pas">
+    <input type="number" id="km" placeholder="Course (km)">
+    <input type="number" id="jambes" placeholder="Levers de jambe">
+    <input type="number" id="genoux" placeholder="Levers de genoux">
+    <input type="number" id="talons" placeholder="Levers de talon">
+    <input type="number" id="pompes" placeholder="Pompes">
+
+    <button onclick="saveData(); updateProgressBars(); updateBadges()">Enregistrer / Modifier</button>
+
+    <h3>Progression quotidienne</h3>
+    <div>
+      <label>Calories : <span id="caloriesValue">0</span>/2000 kcal</label>
+      <div class="progress-container">
+        <div class="progress-bar calories" id="caloriesBar"></div>
+      </div>
+
+      <label>Eau : <span id="eauValue">0</span>/2 L</label>
+      <div class="progress-container">
+        <div class="progress-bar eau" id="eauBar"></div>
+      </div>
     </div>
-  </section>
+
+    <h3>Badges</h3>
+    <div id="badgesContainer"></div>
+  </div>
 </div>
 
 <div class="bottom-nav">
-  <button id="nav-entrees" class="active" onclick="navigate('index.html')">🏠<span>Entrées</span></button>
-  <button id="nav-historique" onclick="navigate('historique.html')">📊<span>Historique</span></button>
-  <button id="nav-records" onclick="navigate('records.html')">🏆<span>Records</span></button>
+  <button class="active" onclick="navigate('index.html')">🏠 Entrées</button>
+  <button onclick="navigate('historique.html')">📊 Historique</button>
+  <button onclick="navigate('records.html')">🏆 Records</button>
 </div>
 
 <script src="fitness.js"></script>

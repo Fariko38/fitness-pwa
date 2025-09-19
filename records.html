@@ -3,32 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Records - Fitness Tracker</title>
+<title>Records Fitness</title>
 <link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
 </head>
 <body>
-<header>🏆 Records & Badges</header>
+<header>🏆 Records</header>
 
 <div class="container">
-  <section id="page-records" class="active">
-    <div class="card">
-      <h2>Records</h2>
-      <ul id="records"></ul>
-      <h2>Badges</h2>
-      <div id="badges"></div>
-      <p id="lastUpdate"></p>
-    </div>
-  </section>
+  <div class="card">
+    <h2>Meilleurs scores</h2>
+    <ul id="recordsList">
+      <!-- Rempli dynamiquement par fitness.js -->
+    </ul>
+  </div>
 </div>
 
 <div class="bottom-nav">
-  <button id="nav-entrees" onclick="navigate('index.html')">🏠<span>Entrées</span></button>
-  <button id="nav-historique" onclick="navigate('historique.html')">📊<span>Historique</span></button>
-  <button id="nav-records" class="active" onclick="navigate('records.html')">🏆<span>Records</span></button>
+  <button onclick="navigate('index.html')">🏠 Entrées</button>
+  <button onclick="navigate('historique.html')">📊 Historique</button>
+  <button class="active" onclick="navigate('records.html')">🏆 Records</button>
 </div>
 
 <script src="fitness.js"></script>
+<script>
+function showRecords() {
+    const list = document.getElementById("recordsList");
+    list.innerHTML = "";
+
+    let pasMax=0, eauMax=0, pompesMax=0, kmMax=0;
+
+    data.forEach(d => {
+        if(d.pas > pasMax) pasMax = d.pas;
+        if(d.eau > eauMax) eauMax = d.eau;
+        if(d.pompes > pompesMax) pompesMax = d.pompes;
+        if(d.km > kmMax) kmMax = d.km;
+    });
+
+    list.innerHTML = `
+        <li>Pas maximum : ${pasMax}</li>
+        <li>Pompes maximum : ${pompesMax}</li>
+        <li>Eau maximum : ${eauMax} L</li>
+        <li>Kilomètres maximum : ${kmMax} km</li>
+    `;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    showRecords();
+});
+</script>
 </body>
 </html>

@@ -3,34 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Historique - Fitness Tracker</title>
+<title>Historique Fitness</title>
 <link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
 </head>
 <body>
 <header>📊 Historique</header>
 
 <div class="container">
-  <section id="page-historique" class="active">
-    <div class="card">
-      <table id="historyTable">
-        <thead>
-          <tr>
-            <th>Jour</th><th>Poids</th><th>Pas</th><th>Pompes</th><th>Talons</th><th>Genoux</th><th>Jambes</th><th>Calories</th><th>Eau</th><th>Km</th><th>Humeur</th><th>Supprimer</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <button onclick="clearHistory()">Supprimer tout</button>
-    </div>
-  </section>
+  <div class="card">
+    <h2>Historique des entrées</h2>
+    <button onclick="clearHistory()">Supprimer tout l'historique</button>
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th>Jour</th>
+          <th>Poids</th>
+          <th>Calories consommées</th>
+          <th>Eau (L)</th>
+          <th>Pas</th>
+          <th>Course (km)</th>
+          <th>Jambes</th>
+          <th>Genoux</th>
+          <th>Talons</th>
+          <th>Pompes</th>
+          <th>Supprimer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rempli dynamiquement par fitness.js -->
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <div class="bottom-nav">
-  <button id="nav-entrees" onclick="navigate('index.html')">🏠<span>Entrées</span></button>
-  <button id="nav-historique" class="active" onclick="navigate('historique.html')">📊<span>Historique</span></button>
-  <button id="nav-records" onclick="navigate('records.html')">🏆<span>Records</span></button>
+  <button onclick="navigate('index.html')">🏠 Entrées</button>
+  <button class="active" onclick="navigate('historique.html')">📊 Historique</button>
+  <button onclick="navigate('records.html')">🏆 Records</button>
 </div>
 
 <script src="fitness.js"></script>
