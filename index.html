@@ -1,137 +1,119 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fitness Tracker</title>
-  <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#000000" />
   <style>
     body {
-      font-family: 'Montserrat', sans-serif;
+      font-family: "Montserrat", sans-serif;
       margin: 0;
-      background-color: var(--bg);
-      color: var(--text);
-      transition: background-color 0.3s, color 0.3s;
+      padding: 0;
+      background: #f5f5f5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    :root {
-      --bg: #f5f5f5;
-      --text: #222;
-      --card: #fff;
-      --green: #4caf50;
-      --red: #f44336;
-    }
-    body.dark {
-      --bg: #121212;
-      --text: #e0e0e0;
-      --card: #1e1e1e;
+    header {
+      text-align: center;
+      padding: 1rem;
+      background: #222;
+      color: #fff;
+      width: 100%;
     }
     .container {
-      max-width: 480px;
-      margin: auto;
-      padding: 20px;
-    }
-    h1 { text-align: center; }
-    .card {
-      background-color: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    label { display: block; margin-top: 10px; font-weight: 600; }
-    input[type="number"] {
+      max-width: 600px;
       width: 100%;
+      padding: 1rem;
+    }
+    input, button {
       padding: 10px;
-      border-radius: 8px;
+      margin: 5px 0;
+      width: 100%;
+      border-radius: 10px;
       border: 1px solid #ccc;
-      margin-top: 5px;
-      font-size: 16px;
     }
     button {
-      padding: 10px 15px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .btn-submit { background-color: #2196f3; color: #fff; }
-    .btn-clear { background-color: #f44336; color: #fff; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 8px; text-align: center; border-bottom: 1px solid #ccc; }
-    .record { display: flex; justify-content: space-between; margin-top: 10px; }
-    .progress-bar {
-      height: 15px;
-      border-radius: 8px;
-      background-color: #eee;
-      margin-top: 5px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background-color: var(--green);
-      transition: width 0.5s;
-    }
-    .btn-toggle-theme {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background-color: #ff9800;
+      background: #222;
       color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #444;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 8px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>Fitness Tracker</h1>
-  <button class="btn-toggle-theme">Mode sombre</button>
+  <header>
+    <h1>🏋️ Fitness Tracker</h1>
+  </header>
+  <div class="container">
+    <h2>Entrées quotidiennes</h2>
+    <input type="number" id="poids" placeholder="Poids (kg)" />
+    <input type="number" id="pas" placeholder="Nombre de pas" />
+    <input type="number" id="pompes" placeholder="Pompes" />
+    <input type="number" id="talons" placeholder="Levers de talon" />
+    <input type="number" id="genoux" placeholder="Levers de genoux" />
+    <input type="number" id="jambes" placeholder="Levers de jambe" />
+    <input type="number" id="calories" placeholder="Calories" />
+    <input type="number" id="eau" placeholder="Eau (ml)" />
+    <button onclick="saveData()">Sauvegarder</button>
+    <button onclick="clearHistory()">🗑️ Supprimer tout l'historique</button>
 
-  <div class="card">
-    <h2>Entrée quotidienne</h2>
-    <label>Poids (kg)<input type="number" id="poids"></label>
-    <label>Pas<input type="number" id="pas"></label>
-    <label>Pompes<input type="number" id="pompes"></label>
-    <label>Lever de talon<input type="number" id="talon"></label>
-    <label>Lever de genoux<input type="number" id="genoux"></label>
-    <label>Lever de jambe<input type="number" id="jambe"></label>
-    <label>Calories<input type="number" id="calories"></label>
-    <label>Eau (L)<input type="number" id="eau"></label>
-    <button class="btn-submit" id="submit">Enregistrer</button>
-  </div>
-
-  <div class="card">
-    <h2>Humeur <span id="smiley">😴</span></h2>
-  </div>
-
-  <div class="card">
     <h2>Historique</h2>
-    <table id="history">
+    <table id="historyTable">
       <thead>
         <tr>
-          <th>Jour</th><th>Pas</th><th>Pompes</th><th>Talon</th><th>Genoux</th><th>Jambe</th><th>Calories</th><th>Eau</th><th>Action</th>
+          <th>Jour</th>
+          <th>Poids</th>
+          <th>Pas</th>
+          <th>Pompes</th>
+          <th>Talons</th>
+          <th>Genoux</th>
+          <th>Jambes</th>
+          <th>Calories</th>
+          <th>Eau</th>
+          <th>Humeur</th>
+          <th>❌</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
+
+    <h2>🏆 Records</h2>
+    <ul id="records"></ul>
   </div>
 
-  <div class="card">
-    <h2>Records</h2>
-    <div class="record">Record de pas: <span id="recordPas">0</span></div>
-    <div class="record">Record d’eau: <span id="recordEau">0</span></div>
-    <div class="record">Record d’exercices: <span id="recordExercices">0</span></div>
-  </div>
-
-  <div class="card">
-    <h2>Progression</h2>
-    <div>Pas <div class="progress-bar"><div class="progress-fill" id="progressPas"></div></div></div>
-    <div>Eau <div class="progress-bar"><div class="progress-fill" id="progressEau"></div></div></div>
-    <div>Exercices <div class="progress-bar"><div class="progress-fill" id="progressExercices"></div></div></div>
-  </div>
-</div>
-
-<script src="fitness.js"></script>
+  <script src="fitness.js"></script>
+  <script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js").then(reg => {
+      reg.onupdatefound = () => {
+        const newWorker = reg.installing;
+        newWorker.onstatechange = () => {
+          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+            alert("🔥 Nouvelle version de l'application disponible ! Recharge la page pour l'utiliser.");
+          }
+        };
+      };
+    });
+  }
+  </script>
 </body>
 </html>

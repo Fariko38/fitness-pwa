@@ -1,108 +1,120 @@
-const objectifs = {pas:15000, eau:2, pompes:50, talon:50, genoux:50, jambe:50};
-let data = JSON.parse(localStorage.getItem("fitnessData")) || [];
-let records = JSON.parse(localStorage.getItem("fitnessRecords")) || {pas:0, eau:0, exercices:0};
-
-const inputs = {
-  poids: document.getElementById("poids"),
-  pas: document.getElementById("pas"),
-  pompes: document.getElementById("pompes"),
-  talon: document.getElementById("talon"),
-  genoux: document.getElementById("genoux"),
-  jambe: document.getElementById("jambe"),
-  calories: document.getElementById("calories"),
-  eau: document.getElementById("eau")
+// Objectifs
+const GOALS = {
+  pas: 15000,
+  eau: 2000,
+  pompes: 50,
+  talons: 50,
+  genoux: 50,
+  jambes: 50
 };
 
-const submitBtn = document.getElementById("submit");
-const smiley = document.getElementById("smiley");
-const tbody = document.querySelector("#history tbody");
-
-function calcSmiley(entry){
-  let objectifsAtteints = 0;
-  if(entry.pas>=objectifs.pas) objectifsAtteints++;
-  if(entry.eau>=objectifs.eau) objectifsAtteints++;
-  if(entry.pompes>=objectifs.pompes) objectifsAtteints++;
-  if(entry.talon>=objectifs.talon) objectifsAtteints++;
-  if(entry.genoux>=objectifs.genoux) objectifsAtteints++;
-  if(entry.jambe>=objectifs.jambe) objectifsAtteints++;
-  if(objectifsAtteints<=2) return "😴";
-  if(objectifsAtteints<=4) return "🙂";
+function getMood(score) {
+  if (score <= 2) return "😴";
+  if (score <= 4) return "🙂";
   return "😃";
 }
 
-function updateRecords(entry){
-  records.pas = Math.max(records.pas, entry.pas);
-  records.eau = Math.max(records.eau, entry.eau);
-  let totalExercices = entry.pompes + entry.talon + entry.genoux + entry.jambe;
-  records.exercices = Math.max(records.exercices, totalExercices);
-  localStorage.setItem("fitnessRecords", JSON.stringify(records));
-  document.getElementById("recordPas").textContent = records.pas;
-  document.getElementById("recordEau").textContent = records.eau;
-  document.getElementById("recordExercices").textContent = records.exercices;
+function saveData() {
+  const data = {
+    date: new Date().toLocaleDateString("fr-FR", { weekday: "long" }),
+    poids: document.getElementById("poids").value,
+    pas: +document.getElementById("pas").value,
+    pompes: +document.getElementById("pompes").value,
+    talons: +document.getElementById("talons").value,
+    genoux: +document.getElementById("genoux").value,
+    jambes: +document.getElementById("jambes").value,
+    calories: +document.getElementById("calories").value,
+    eau: +document.getElementById("eau").value
+  };
+
+  let score = 0;
+  if (data.pas >= GOALS.pas) score++;
+  if (data.eau >= GOALS.eau) score++;
+  if (data.pompes >= GOALS.pompes) score++;
+  if (data.talons >= GOALS.talons) score++;
+  if (data.genoux >= GOALS.genoux) score++;
+  if (data.jambes >= GOALS.jambes) score++;
+
+  data.mood = getMood(score);
+
+  const history = JSON.parse(localStorage.getItem("history")) || [];
+  history.push(data);
+  localStorage.setItem("history", JSON.stringify(history));
+
+  updateHistory();
+  updateRecords();
 }
 
-function updateProgress(entry){
-  document.getElementById("progressPas").style.width = Math.min(entry.pas/objectifs.pas*100,100) + "%";
-  document.getElementById("progressEau").style.width = Math.min(entry.eau/objectifs.eau*100,100) + "%";
-  let totalEx = entry.pompes+entry.talon+entry.genoux+entry.jambe;
-  document.getElementById("progressExercices").style.width = Math.min(totalEx/(objectifs.pompes*4)*100,100) + "%";
+function deleteEntry(index) {
+  let history = JSON.parse(localStorage.getItem("history")) || [];
+  history.splice(index, 1);
+  localStorage.setItem("history", JSON.stringify(history));
+  updateHistory();
+  updateRecords();
 }
 
-function renderHistory(){
+function clearHistory() {
+  if (confirm("Voulez-vous vraiment supprimer tout l'historique ?")) {
+    localStorage.removeItem("history");
+    updateHistory();
+    updateRecords();
+  }
+}
+
+function updateHistory() {
+  const history = JSON.parse(localStorage.getItem("history")) || [];
+  const tbody = document.querySelector("#historyTable tbody");
   tbody.innerHTML = "";
-  data.forEach((entry,index)=>{
-    let row = document.createElement("tr");
-    let date = new Date(entry.date).toLocaleDateString('fr-FR',{weekday:'long', day:'numeric', month:'short'});
-    row.innerHTML = `
-      <td>${date}</td>
-      <td style="color:${entry.pas>=objectifs.pas?'green':'red'}">${entry.pas}</td>
-      <td style="color:${entry.pompes>=objectifs.pompes?'green':'red'}">${entry.pompes}</td>
-      <td style="color:${entry.talon>=objectifs.talon?'green':'red'}">${entry.talon}</td>
-      <td style="color:${entry.genoux>=objectifs.genoux?'green':'red'}">${entry.genoux}</td>
-      <td style="color:${entry.jambe>=objectifs.jambe?'green':'red'}">${entry.jambe}</td>
+
+  history.forEach((entry, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${entry.date}</td>
+      <td>${entry.poids}</td>
+      <td style="color:${entry.pas >= GOALS.pas ? "green":"red"}">${entry.pas}</td>
+      <td style="color:${entry.pompes >= GOALS.pompes ? "green":"red"}">${entry.pompes}</td>
+      <td style="color:${entry.talons >= GOALS.talons ? "green":"red"}">${entry.talons}</td>
+      <td style="color:${entry.genoux >= GOALS.genoux ? "green":"red"}">${entry.genoux}</td>
+      <td style="color:${entry.jambes >= GOALS.jambes ? "green":"red"}">${entry.jambes}</td>
       <td>${entry.calories}</td>
-      <td style="color:${entry.eau>=objectifs.eau?'green':'red'}">${entry.eau}</td>
-      <td><button class="btn-clear" onclick="deleteEntry(${index})">Supprimer</button></td>
+      <td style="color:${entry.eau >= GOALS.eau ? "green":"red"}">${entry.eau}</td>
+      <td>${entry.mood}</td>
+      <td><button onclick="deleteEntry(${index})">❌</button></td>
     `;
-    tbody.appendChild(row);
+    tbody.appendChild(tr);
   });
 }
 
-function deleteEntry(index){
-  data.splice(index,1);
-  localStorage.setItem("fitnessData", JSON.stringify(data));
-  renderHistory();
-  if(data.length>0) updateSmiley(data[data.length-1]);
+function updateRecords() {
+  const history = JSON.parse(localStorage.getItem("history")) || [];
+  const records = {
+    pas: 0,
+    pompes: 0,
+    talons: 0,
+    genoux: 0,
+    jambes: 0,
+    eau: 0
+  };
+
+  history.forEach(entry => {
+    records.pas = Math.max(records.pas, entry.pas);
+    records.pompes = Math.max(records.pompes, entry.pompes);
+    records.talons = Math.max(records.talons, entry.talons);
+    records.genoux = Math.max(records.genoux, entry.genoux);
+    records.jambes = Math.max(records.jambes, entry.jambes);
+    records.eau = Math.max(records.eau, entry.eau);
+  });
+
+  const ul = document.getElementById("records");
+  ul.innerHTML = `
+    <li>Pas max : ${records.pas}</li>
+    <li>Pompes max : ${records.pompes}</li>
+    <li>Levers de talon max : ${records.talons}</li>
+    <li>Levers de genoux max : ${records.genoux}</li>
+    <li>Levers de jambe max : ${records.jambes}</li>
+    <li>Eau max : ${records.eau} ml</li>
+  `;
 }
 
-function updateSmiley(entry){
-  smiley.textContent = calcSmiley(entry);
-}
-
-submitBtn.addEventListener("click",()=>{
-  let entry = {};
-  for(let key in inputs) entry[key] = Number(inputs[key].value)||0;
-  entry.date = new Date();
-  data.push(entry);
-  localStorage.setItem("fitnessData", JSON.stringify(data));
-  renderHistory();
-  updateSmiley(entry);
-  updateRecords(entry);
-  updateProgress(entry);
-  for(let key in inputs) inputs[key].value="";
-});
-
-// Initialisation
-if(data.length>0){
-  renderHistory();
-  updateSmiley(data[data.length-1]);
-  updateRecords(data[data.length-1]);
-  updateProgress(data[data.length-1]);
-}
-
-// Toggle mode sombre
-const toggleTheme = document.querySelector(".btn-toggle-theme");
-toggleTheme.addEventListener("click",()=>{
-  document.body.classList.toggle("dark");
-  toggleTheme.textContent = document.body.classList.contains("dark") ? "Mode clair" : "Mode sombre";
-});
+updateHistory();
+updateRecords();
