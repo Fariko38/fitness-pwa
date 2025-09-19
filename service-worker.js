@@ -1,9 +1,10 @@
-const CACHE_NAME = "fitness-cache-v3";
+const CACHE_NAME = "fitness-cache-v1";
 const urlsToCache = [
-  "index.html",
-  "manifest.json",
-  "fitness.js",
-  "icon.svg"
+  "/",
+  "/index.html",
+  "/fitness.js",
+  "/manifest.json",
+  "/icon.svg"
 ];
 
 self.addEventListener("install", event => {
@@ -23,27 +24,7 @@ self.addEventListener("activate", event => {
       )
     )
   );
-  return self.clients.claim();
-});
-
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
-  );
-});
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key); // supprime l'ancien cache
-          }
-        })
-      )
-    )
-  );
-  return self.clients.claim(); // prend le contrôle immédiatement
+  self.clients.claim();
 });
 
 self.addEventListener("fetch", event => {
