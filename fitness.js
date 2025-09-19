@@ -1,122 +1,66 @@
-let data = JSON.parse(localStorage.getItem('fitnessData')) || [];
+function navigate(page) {
+  window.location.href = page;
+}
 
 function saveData() {
-    const today = new Date().toLocaleDateString('fr-FR');
-    const poids = parseFloat(document.getElementById('poids').value) || 0;
-    const calories = parseInt(document.getElementById('calories').value) || 0;
-    const eau = parseFloat(document.getElementById('eau').value) || 0;
-    const pas = parseInt(document.getElementById('pas').value) || 0;
-    const km = parseFloat(document.getElementById('km').value) || 0;
-    const jambes = parseInt(document.getElementById('jambes').value) || 0;
-    const genoux = parseInt(document.getElementById('genoux').value) || 0;
-    const talons = parseInt(document.getElementById('talons').value) || 0;
-    const pompes = parseInt(document.getElementById('pompes').value) || 0;
+  const entry = {
+    date: new Date().toLocaleDateString(),
+    poids: document.getElementById("poids").value,
+    calories: document.getElementById("calories").value,
+    eau: document.getElementById("eau").value,
+    pas: document.getElementById("pas").value,
+    km: document.getElementById("km").value,
+    jambes: document.getElementById("jambes").value,
+    genoux: document.getElementById("genoux").value,
+    talons: document.getElementById("talons").value,
+    pompes: document.getElementById("pompes").value
+  };
 
-    let existing = data.find(d => d.jour === today);
-    if(existing) {
-        Object.assign(existing, {poids, calories, eau, pas, km, jambes, genoux, talons, pompes});
-    } else {
-        data.push({jour: today, poids, calories, eau, pas, km, jambes, genoux, talons, pompes});
-    }
+  let data = JSON.parse(localStorage.getItem("fitnessData")) || [];
+  const existingIndex = data.findIndex(e => e.date === entry.date);
+  if (existingIndex >= 0) data[existingIndex] = entry;
+  else data.push(entry);
 
-    localStorage.setItem('fitnessData', JSON.stringify(data));
-    alert("Données enregistrées !");
-    updateHistory();
-    updateProgressBars();
-    updateBadges();
-}
-
-function updateHistory() {
-    const tbody = document.querySelector("#historyTable tbody");
-    if(!tbody) return;
-    tbody.innerHTML = "";
-    data.forEach((d, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${d.jour}</td>
-            <td>${d.poids}</td>
-            <td>${d.calories}</td>
-            <td>${d.eau}</td>
-            <td>${d.pas}</td>
-            <td>${d.km}</td>
-            <td>${d.jambes}</td>
-            <td>${d.genoux}</td>
-            <td>${d.talons}</td>
-            <td>${d.pompes}</td>
-            <td><button onclick="deleteEntry(${index})">❌</button></td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function deleteEntry(index) {
-    data.splice(index,1);
-    localStorage.setItem('fitnessData', JSON.stringify(data));
-    updateHistory();
-}
-
-function clearHistory() {
-    if(confirm("Voulez-vous vraiment supprimer tout l'historique ?")) {
-        data = [];
-        localStorage.setItem('fitnessData', JSON.stringify(data));
-        updateHistory();
-    }
+  localStorage.setItem("fitnessData", JSON.stringify(data));
+  alert("Données enregistrées !");
 }
 
 function updateProgressBars() {
-    const caloriesInput = parseInt(document.getElementById('calories').value) || 0;
-    const eauInput = parseFloat(document.getElementById('eau').value) || 0;
+  const calories = document.getElementById("calories").value || 0;
+  const eau = document.getElementById("eau").value || 0;
 
-    const caloriesBar = document.getElementById('caloriesBar');
-    const eauBar = document.getElementById('eauBar');
+  const caloriesPct = Math.min((calories / 2000) * 100, 100);
+  const eauPct = Math.min((eau / 2) * 100, 100);
 
-    const maxCalories = 2000;
-    const maxEau = 2;
+  document.getElementById("caloriesBar").style.width = caloriesPct + "%";
+  document.getElementById("eauBar").style.width = eauPct + "%";
 
-    let caloriesPercent = Math.min((caloriesInput / maxCalories) * 100, 100);
-    let eauPercent = Math.min((eauInput / maxEau) * 100, 100);
-
-    caloriesBar.style.width = caloriesPercent + '%';
-    eauBar.style.width = eauPercent + '%';
-
-    caloriesBar.style.background = caloriesInput > maxCalories ? '#ff4d4d' : '#4caf50';
-    eauBar.style.background = eauInput >= maxEau ? '#4caf50' : '#2196F3';
-
-    document.getElementById('caloriesValue').textContent = Math.min(caloriesInput, maxCalories);
-    document.getElementById('eauValue').textContent = Math.min(eauInput, maxEau);
+  document.getElementById("caloriesValue").textContent = calories;
+  document.getElementById("eauValue").textContent = eau;
 }
 
 function updateBadges() {
-    const container = document.getElementById('badgesContainer');
-    if(!container) return;
-    container.innerHTML = "";
-    const calories = parseInt(document.getElementById('calories').value) || 0;
-    const eau = parseFloat(document.getElementById('eau').value) || 0;
-    const pas = parseInt(document.getElementById('pas').value) || 0;
-    const km = parseFloat(document.getElementById('km').value) || 0;
-    const pompes = parseInt(document.getElementById('pompes').value) || 0;
+  const pas = document.getElementById("pas").value || 0;
+  const badgesContainer = document.getElementById("badgesContainer");
+  badgesContainer.innerHTML = "";
 
-    if(calories <= 2000) container.innerHTML += '<span class="badge">🍽 Calories OK</span>';
-    if(eau >= 2) container.innerHTML += '<span class="badge">💧 Eau OK</span>';
-    if(pas >= 15000) container.innerHTML += '<span class="badge">🏃‍♂️ Pas atteints</span>';
-    if(km >= 5) container.innerHTML += '<span class="badge">🏃 Course atteinte</span>';
-    if(pompes >=50) container.innerHTML += '<span class="badge">💪 Pompes atteintes</span>';
+  if (pas >= 10000) {
+    const badge = document.createElement("div");
+    badge.className = "badge";
+    badge.textContent = "🔥 10000 pas atteints !";
+    badgesContainer.appendChild(badge);
+  }
 }
 
-function navigate(page) {
-    window.location.href = page;
-}
-
-document.getElementById('toggleThemeBtn').addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    const dark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('darkMode', dark);
+// Mode sombre
+document.getElementById("toggleThemeBtn").addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
 });
 
-if(localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
-}
-
-updateHistory();
-updateProgressBars();
-updateBadges();
+// Charger le thème au démarrage
+window.onload = () => {
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+  }
+};
