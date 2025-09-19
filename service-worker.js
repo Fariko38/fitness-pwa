@@ -2,6 +2,9 @@ const CACHE_NAME = 'fitness-cache-v1';
 const urlsToCache = [
   '.',
   './index.html',
+  './historique.html',
+  './records.html',
+  './style.css',
   './fitness.js',
   './manifest.json',
   './icon.svg'

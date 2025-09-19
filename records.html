@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Records - Fitness Tracker</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+</head>
+<body>
+<header>🏆 Records & Badges</header>
+
+<div class="container">
+  <section id="page-records" class="active">
+    <div class="card">
+      <h2>Records</h2>
+      <ul id="records"></ul>
+      <h2>Badges</h2>
+      <div id="badges"></div>
+      <p id="lastUpdate"></p>
+    </div>
+  </section>
+</div>
+
+<div class="bottom-nav">
+  <button id="nav-entrees" onclick="navigate('index.html')">🏠<span>Entrées</span></button>
+  <button id="nav-historique" onclick="navigate('historique.html')">📊<span>Historique</span></button>
+  <button id="nav-records" class="active" onclick="navigate('records.html')">🏆<span>Records</span></button>
+</div>
+
+<script src="fitness.js"></script>
+</body>
+</html>

@@ -1,71 +1,35 @@
+// stockage des données
 let data = JSON.parse(localStorage.getItem("fitnessData")) || [];
 let records = JSON.parse(localStorage.getItem("fitnessRecords")) || {};
 
 function saveData() {
-  const today = new Date().toLocaleDateString("fr-FR", { weekday: 'long', day:'numeric', month:'numeric' });
   const entry = {
-    day: today,
-    poids: parseFloat(document.getElementById("poids").value)||0,
-    pas: parseInt(document.getElementById("pas").value)||0,
-    pompes: parseInt(document.getElementById("pompes").value)||0,
-    talons: parseInt(document.getElementById("talons").value)||0,
-    genoux: parseInt(document.getElementById("genoux").value)||0,
-    jambes: parseInt(document.getElementById("jambes").value)||0,
-    calories: parseInt(document.getElementById("calories").value)||0,
-    eau: parseFloat(document.getElementById("eau").value)||0,
-    km: parseFloat(document.getElementById("km").value)||0
+    jour: new Date().toLocaleDateString(),
+    poids: +document.getElementById("poids")?.value || 0,
+    pas: +document.getElementById("pas")?.value || 0,
+    pompes: +document.getElementById("pompes")?.value || 0,
+    talons: +document.getElementById("talons")?.value || 0,
+    genoux: +document.getElementById("genoux")?.value || 0,
+    jambes: +document.getElementById("jambes")?.value || 0,
+    calories: +document.getElementById("calories")?.value || 0,
+    eau: +document.getElementById("eau")?.value || 0,
+    km: +document.getElementById("km")?.value || 0
   };
 
-  const index = data.findIndex(d=>d.day===today);
-  if(index>=0) data[index]=entry; else data.push(entry);
+  const todayIndex = data.findIndex(d=>d.jour===entry.jour);
+  if(todayIndex>-1) data[todayIndex] = entry; 
+  else data.push(entry);
 
   localStorage.setItem("fitnessData", JSON.stringify(data));
-  updateUI(); updateRecords();
-  alert("✅ Données enregistrées !");
-}
-
-function getMood(entry){
-  const targets={pas:15000,eau:2,pompes:50,talons:50,genoux:50,jambes:50};
-  let count=0;
-  for(const k in targets) if(entry[k]>=targets[k]) count++;
-  if(count<=2) return "😴";
-  if(count<=4) return "🙂";
-  return "😃";
-}
-
-function updateUI(){
-  const tbody=document.querySelector("#historyTable tbody");
-  tbody.innerHTML="";
-  data.forEach(d=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td>${d.day}</td>
-      <td>${d.poids}</td>
-      <td>${d.pas}</td>
-      <td>${d.pompes}</td>
-      <td>${d.talons}</td>
-      <td>${d.genoux}</td>
-      <td>${d.jambes}</td>
-      <td>${d.calories}</td>
-      <td>${d.eau}</td>
-      <td>${d.km}</td>
-      <td>${getMood(d)}</td>
-      <td><button onclick="deleteDay('${d.day}')">❌</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function deleteDay(day){
-  data = data.filter(d=>d.day!==day);
-  localStorage.setItem("fitnessData", JSON.stringify(data));
-  updateUI(); updateRecords();
+  updateRecords();
+  alert("Données enregistrées ✅");
 }
 
 function clearHistory(){
-  if(confirm("Voulez-vous vraiment supprimer tout l'historique ?")){
+  if(confirm("Supprimer tout l'historique ?")) {
     data=[]; localStorage.setItem("fitnessData", JSON.stringify(data));
-    updateUI(); updateRecords();
+    updateRecords();
+    location.reload();
   }
 }
 
@@ -84,24 +48,28 @@ function updateRecords(){
   localStorage.setItem("fitnessRecords",JSON.stringify(records));
 
   const recList=document.getElementById("records");
-  recList.innerHTML=`
-    <li>Pas maximum : ${records.maxPas}</li>
-    <li>Eau maximum : ${records.maxEau} L</li>
-    <li>Pompes maximum : ${records.maxPompes}</li>
-    <li>Levers de talon maximum : ${records.maxTalons}</li>
-    <li>Levers de genoux maximum : ${records.maxGenoux}</li>
-    <li>Levers de jambe maximum : ${records.maxJambes}</li>
-    <li>Km total : ${records.totalKm}</li>
-  `;
+  if(recList){
+    recList.innerHTML=`
+      <li>Pas maximum : ${records.maxPas}</li>
+      <li>Eau maximum : ${records.maxEau} L</li>
+      <li>Pompes maximum : ${records.maxPompes}</li>
+      <li>Levers de talon maximum : ${records.maxTalons}</li>
+      <li>Levers de genoux maximum : ${records.maxGenoux}</li>
+      <li>Levers de jambe maximum : ${records.maxJambes}</li>
+      <li>Km total : ${records.totalKm}</li>
+    `;
+  }
 
   const badgesDiv=document.getElementById("badges");
-  badgesDiv.innerHTML="";
-  data.forEach(d=>{
-    if(d.pas>=15000) badgesDiv.innerHTML+="<span class='badge'>🔥 15000 pas atteints !</span>";
-    if(d.eau>=2) badgesDiv.innerHTML+="<span class='badge'>💧 Objectif eau atteint !</span>";
-  });
-
-  document.getElementById("lastUpdate").textContent="Dernière mise à jour : "+new Date().toLocaleString();
+  if(badgesDiv){
+    badgesDiv.innerHTML="";
+    data.forEach(d=>{
+      if(d.pas>=15000) badgesDiv.innerHTML+="<span class='badge'>🔥 15000 pas atteints !</span>";
+      if(d.eau>=2) badgesDiv.innerHTML+="<span class='badge'>💧 Objectif eau atteint !</span>";
+    });
+  }
 }
 
-updateUI(); updateRecords();
+function navigate(page){ window.location.href=page; }
+
+updateRecords();

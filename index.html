@@ -4,62 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fitness Tracker</title>
+<link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
-
-body {
-  margin:0; padding:0;
-  font-family:'Montserrat',sans-serif;
-  background:#f5f5f5;
-  color:#333;
-  display:flex; flex-direction:column; height:100vh;
-  overflow:hidden;
-  transition: background 0.3s,color 0.3s;
-}
-body.dark { background:#121212; color:#eee; }
-
-header { text-align:center; padding:1rem; background:#222; color:#fff; font-size:1.5rem; }
-.container { flex:1; overflow-y:auto; padding:1rem; }
-
-section { display:none; }
-section.active { display:block; }
-
-.card {
-  background:#fff; border-radius:15px; padding:1rem;
-  box-shadow:0 4px 10px rgba(0,0,0,0.2);
-  margin-bottom:1rem; transition: background 0.3s;
-}
-body.dark .card { background:#1e1e1e; }
-
-.bottom-nav {
-  display:flex; justify-content:space-around;
-  background:rgba(255,255,255,0.95); backdrop-filter:blur(10px);
-  padding:0.5rem 0; border-top:1px solid #ccc; position:fixed; bottom:0; width:100%;
-}
-.bottom-nav button {
-  background:none; border:none; font-size:1.2rem; display:flex; flex-direction:column; align-items:center;
-  cursor:pointer; transition: color 0.3s;
-}
-.bottom-nav button.active { color:#ff6f61; }
-
-input, button { padding:10px; margin:5px 0; border-radius:10px; border:1px solid #ccc; width:100%; }
-button { background:#222; color:#fff; cursor:pointer; }
-button:hover { background:#444; }
-
-.progress-bar { height:20px; border-radius:10px; background:#eee; margin-top:5px; overflow:hidden; }
-.progress { height:100%; width:0%; background:green; transition: width 0.5s, background 0.5s; }
-
-.badge { display:inline-block; margin:3px; padding:5px 10px; border-radius:12px; background:gold; color:#000; font-weight:600; }
-
-</style>
 </head>
 <body>
 <header>🏋️ Fitness Tracker</header>
 
 <div class="container">
-  <!-- Page Entrées -->
   <section id="page-entrees" class="active">
     <div class="card">
       <h2>Entrées quotidiennes</h2>
@@ -75,57 +27,14 @@ button:hover { background:#444; }
       <button onclick="saveData()">Enregistrer / Modifier</button>
     </div>
   </section>
-
-  <!-- Page Historique -->
-  <section id="page-historique">
-    <div class="card">
-      <h2>Historique</h2>
-      <table id="historyTable">
-        <thead>
-          <tr>
-            <th>Jour</th><th>Poids</th><th>Pas</th><th>Pompes</th><th>Talons</th><th>Genoux</th><th>Jambes</th><th>Calories</th><th>Eau</th><th>Km</th><th>Humeur</th><th>❌</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <button onclick="clearHistory()">Supprimer tout</button>
-    </div>
-  </section>
-
-  <!-- Page Records -->
-  <section id="page-records">
-    <div class="card">
-      <h2>🏆 Records & Classement</h2>
-      <ul id="records"></ul>
-      <div id="badges"></div>
-      <p id="lastUpdate"></p>
-    </div>
-  </section>
 </div>
 
-<!-- Bottom Navigation -->
 <div class="bottom-nav">
-  <button id="nav-entrees" class="active" onclick="showPage('entrees')">🏠<span>Entrées</span></button>
-  <button id="nav-historique" onclick="showPage('historique')">📊<span>Historique</span></button>
-  <button id="nav-records" onclick="showPage('records')">🏆<span>Records</span></button>
+  <button id="nav-entrees" class="active" onclick="navigate('index.html')">🏠<span>Entrées</span></button>
+  <button id="nav-historique" onclick="navigate('historique.html')">📊<span>Historique</span></button>
+  <button id="nav-records" onclick="navigate('records.html')">🏆<span>Records</span></button>
 </div>
 
 <script src="fitness.js"></script>
-<script>
-function showPage(page){
-  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
-  document.querySelector("#page-"+page).classList.add("active");
-
-  document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.remove("active"));
-  document.querySelector("#nav-"+page).classList.add("active");
-}
-
-// Gestion thème
-function toggleTheme(){
-  document.body.classList.toggle("dark");
-  localStorage.setItem("theme",document.body.classList.contains("dark")?"dark":"light");
-}
-if(localStorage.getItem("theme")==="dark") document.body.classList.add("dark");
-</script>
 </body>
 </html>
